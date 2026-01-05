@@ -33,6 +33,8 @@ def explore_auth_preview():
         'Auth_Type', 'Logon_Type', 'Auth_Orientation', 'Success'
     ]
     print(df_auth)
+    
 if __name__ == '__main__':
-    #explore_redteam()
+    explore_redteam()
+    print("="*40)
     explore_auth_preview()
