@@ -1,6 +1,6 @@
 # Đây là về hệ thống xử lý đa đầu vào nhằm mục đích từ nhiều input ( network flow, log,..) sẽ được gộp lại để phù hợp cho hệ thống early warning system
 
-Về Dataset, nhóm sẽ dùng dataset "LANL Unified Host and Network Data Set", cụ thể là "Comprehensive, Multi-Source Cyber-Security Events".
+Về Dataset, tôi sẽ dùng dataset "LANL Unified Host and Network Data Set", cụ thể là "Comprehensive, Multi-Source Cyber-Security Events".
 
 ## Metadata của dataset:
 
