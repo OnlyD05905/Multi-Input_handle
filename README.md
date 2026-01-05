@@ -1,92 +1,62 @@
-# Đây là về hệ thống xử lý đa đầu vào nhằm mục đích từ nhiều input ( network flow, log,..) sẽ được gộp lại để phù hợp cho hệ thống early warning system
+# Real-time Multi-Input S.O.C System
 
-Về Dataset, nhóm sẽ dùng dataset "LANL Unified Host and Network Data Set", cụ thể là "Comprehensive, Multi-Source Cyber-Security Events".
+> Hệ thống giám sát an ninh mạng thời gian thực xử lý đa nguồn dữ liệu (Log, Network Flow, Process).
 
-## Metadata của dataset:
+## Giới thiệu
+Dự án mô phỏng một trung tâm S.O.C (Security Operations Center) thu nhỏ. Hệ thống có khả năng tiếp nhận luồng dữ liệu khổng lồ (Big Data) từ dataset LANL Cyber-Security, đồng bộ hóa thời gian thực và phát hiện các cuộc tấn công mạng.
 
-Đây là một bộ dữ liệu an ninh mạng toàn diện và đa nguồn từ Phòng thí nghiệm Quốc gia Los Alamos (LANL).
+## Tính năng chính
+* **Multi-Input Handling:** Xử lý đồng bộ 4 nguồn: Auth, Process, DNS, Flows.
+* **High Performance:** Core xử lý ~80.000 sự kiện/giây trên máy cá nhân.
+* **Real-time Engine:** Cơ chế Streaming giả lập thời gian thực.
+* **Detection System:** Tích hợp phát hiện dựa trên Chữ ký (Signature) và Bất thường (Anomaly).
 
-* **Thời gian thu thập:** Dữ liệu được thu thập liên tục trong 58 ngày.
-* **Nguồn dữ liệu:** Dữ liệu được tổng hợp từ 5 nguồn khác nhau bên trong mạng nội bộ của LANL, bao gồm:
-    * Log Xác thực (Authentication events): Từ các máy Windows cá nhân và máy chủ Active Directory.
-    * Log Tiến trình (Process events): Ghi lại các tiến trình (process) bắt đầu và kết thúc trên máy Windows.
-    * Log DNS: Ghi lại các truy vấn DNS từ máy chủ DNS nội bộ.
-    * Dữ liệu Luồng Mạng (Network flow): Thu thập từ mạng.
-* **Quy mô:** Bộ dữ liệu này rất lớn, bao gồm:
-    * Tổng cộng 1,64 tỷ sự kiện (events).
-    * Liên quan đến 12.425 người dùng (users) và 17.684 máy tính (computers).
-    * Dung lượng nén khoảng 12 GB.
-* **Đặc điểm nổi bật:** Dữ liệu đã được ẩn danh (de-identified) để bảo mật. Dữ liệu thời gian (time) bắt đầu từ 1 và tính theo giây.
+## 📂 Tài liệu dự án (Documentation)
+Để tránh thông tin quá tải, chi tiết kỹ thuật được chia nhỏ tại thư mục `docs/`:
 
----
+1.  [ **Architecture:**](./docs/architecture.md) Sơ đồ luồng dữ liệu và thiết kế hệ thống.
+2.  [ **Dataset Schema:**](./docs/dataset_schema.md) Chi tiết về bộ dữ liệu LANL (Metadata, ý nghĩa các cột).
+3.  [ **Project Plan:**](./docs/plan.md) Lộ trình phát triển 30 Tasks và tiến độ hiện tại.
+4.  [ **Changelog:**](./CHANGELOG.md) Nhật ký thay đổi và cập nhật phiên bản.
 
-## Mô tả nhanh các file có trong dataset:
+## Cài đặt & Sử dụng (Quick Start)
 
-### 1. 📂 auth.txt.gz (Log Xác thực):
+### 1. Yêu cầu
+* Python 3.8+
 
-* **Nguồn gốc:** Thu thập từ các máy tính Windows cá nhân và các máy chủ Active Directory (máy chủ quản lý danh tính).
-* **Phân tích các trường (cột):**
-    * `time`: Thời gian (tính bằng giây).
-    * `source user@domain` & `destination user@domain`: Ai là người/máy tính khởi tạo yêu cầu xác thực, và họ đang cố gắng trở thành ai.
-    * `source computer` & `destination computer`: Yêu cầu đi từ máy nào và nhắm đến máy nào.
-    * `authentication type`: Kiểu xác thực (ví dụ: Kerberos, NTLM...).
-    * `logon type`: Kiểu đăng nhập (ví dụ: Đăng nhập từ xa, đăng nhập tương tác tại máy...).
-    * `authentication orientation`: Hướng (ví dụ: Log on, Log off, hay chỉ là yêu cầu xác thực).
-    * `success/failure`: Trạng thái (Thành công/Thất bại).
+### 2. Cài đặt
+```bash
+# Clone dự án
+git clone [https://github.com/OnlyD05905/Multi-Input_handle.git](https://github.com/OnlyD05905/Multi-Input_handle.git)
+cd Multi-Input_handle
 
-<img width="1000" height="190" alt="image" src="https://github.com/user-attachments/assets/6ca621fb-f43d-485f-b0a3-9a650f7f7401" />
+# Tạo môi trường ảo (Khuyến nghị)
+python -m venv venv
+# Windows:
+.\venv\Scripts\activate
+# Linux/Mac:
+source venv/bin/activate
 
-### 2. 📂 proc.txt.gz (Log Tiến trình):
-
-* **Nguồn gốc:** Thu thập từ các máy tính Windows cá nhân.
-* **Phân tích các trường (cột):**
-    * `time`: Thời gian.
-    * `user@domain`: Người dùng nào đã thực thi tiến trình.
-    * `computer`: Tiến trình chạy trên máy tính nào.
-    * `process name`: Tên của tiến trình (ví dụ: chrome.exe, powershell.exe).
-    * `start/end`: Ghi lại sự kiện bắt đầu hay kết thúc của tiến trình.
-
-<img width="995" height="189" alt="image" src="https://github.com/user-attachments/assets/4225060d-f25a-45d5-8770-b34e0df6891f" />
-
-
-### 3. 📂 dns.txt.gz (Log DNS):
-
-* **Nguồn gốc:** Thu thập từ các máy chủ DNS nội bộ (máy chủ "phiên dịch" tên miền).
-* **Phân tích các trường (cột):**
-    * `time`: Thời gian.
-    * `source computer`: Máy tính nào đã thực hiện tra cứu.
-    * `computer resolved`: Tên miền (hoặc máy tính) đã được tra cứu.
-
-<img width="968" height="188" alt="image" src="https://github.com/user-attachments/assets/b789f3e9-a0f9-4ca2-99d9-b435590a542f" />
-
-### 4. 📂 flows.txt.gz (Luồng Mạng):
-
-* **Nguồn gốc:** Thu thập từ các router nội bộ.
-* **Phân tích các trường (cột):**
-    * `time`: Thời gian.
-    * `duration`: Thời lượng của luồng.
-    * `source computer` & `destination computer`: Máy nguồn và máy đích.
-    * `source port` & `destination port`: Cổng nguồn và cổng đích.
-    * `protocol`: Giao thức (ví dụ: 6=TCP, 17=UDP).
-    * `packet count`: Số lượng gói tin.
-    * `byte count`: Số lượng bytes (dung lượng).
-
-<img width="996" height="184" alt="image" src="https://github.com/user-attachments/assets/844505c0-575f-4360-ab46-ad3e519e17e4" />
-
----
-
-## 📂 Cấu trúc Thư mục
-
+# Cài đặt thư viện
+pip install -r requirements.txt
 ```
+### 3. Chạy hệ thống
+```bash
+python src/main.py
+```
+
+## Cấu trúc thư mục
+```text
 /
-├── data/
-│   ├── raw/        # Chứa dữ liệu gốc (.gz) từ LANL
-│   └── processed/  # Chứa dữ liệu đã được xử lý và gộp lại
-├── notebooks/      # Chứa các file Jupyter Notebook để khám phá, thử nghiệm
-├── src/            # Chứa code Python .py chính thức của dự án
-│   ├── data_processing.py  # Script xử lý và gộp dữ liệu
-│   ├── model.py            # Định nghĩa kiến trúc mô hình đa đầu vào
-│   └── train.py            # Script để huấn luyện mô hình
-├── models/         # Nơi lưu trữ các file model đã huấn luyện (.h5)
-└── requirements.txt  # Danh sách các thư viện Python cần thiết
+MULTI-INPUT_HANDLE/
+├── alerts.db           # Database cảnh báo (SQLite)
+├── data/raw/           # Nơi chứa dataset (.gz)
+├── docs/               # Tài liệu kỹ thuật chi tiết
+├── src/                # Source code chính
+│   ├── config.py       # Cấu hình
+│   ├── streamer.py     # Engine đọc dữ liệu
+│   ├── main.py         # File khởi chạy
+│   └── ...
+├── notebooks/          # Code thử nghiệm
+└── CHANGELOG.md        # Lịch sử cập nhật
 ```
