@@ -27,10 +27,10 @@ Tiến độ dự án được chia thành 6 giai đoạn (Phases). Mục tiêu 
 ## Phase 3: Preprocessing (Tiền xử lý dữ liệu)
 *Mục tiêu: Làm sạch, chuẩn hóa dữ liệu thô thành dạng máy hiểu được.*
 
-- [ ] **Task 09:** Viết `src/preprocess.py` - Phần Auth: Tách `User@Domain`, xử lý Machine Account (`$`).
-- [ ] **Task 10:** Viết `src/preprocess.py` - Phần Flows: Chuẩn hóa IP, Port, tính toán Duration.
-- [ ] **Task 11:** Viết `src/preprocess.py` - Phần Proc & DNS: Lọc nhiễu, chuẩn hóa tên tiến trình/tên miền.
-- [ ] **Task 12:** Tích hợp Preprocess vào `main.py`: Dữ liệu từ Streamer -> Preprocess -> In kết quả sạch.
+- [x] **Task 09:** Viết `src/preprocess.py` - Phần Auth: Tách `User@Domain`, xử lý Machine Account (`$`).
+- [x] **Task 10:** Viết `src/preprocess.py` - Phần Flows: Chuẩn hóa IP, Port, tính toán Duration.
+- [x] **Task 11:** Viết `src/preprocess.py` - Phần Proc & DNS: Lọc nhiễu, chuẩn hóa tên tiến trình/tên miền.
+- [x] **Task 12:** Tích hợp Preprocess vào `main.py`: Dữ liệu từ Streamer -> Preprocess -> In kết quả sạch.
 
 ---
 

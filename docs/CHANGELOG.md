@@ -10,4 +10,7 @@
 (đối với multi-input) bằng 1 biến cờ target
 - **các file sửa:** ``main.py`` , ``streamer.py``.
 
-## ## Phase 3: Preprocessing
+## Phase 3: Preprocessing
+- **dữ liệu còn khá thô streamer -> main**nên cần có 1 đầu lọc data giúp clean dễ đọc và phục vụ train A.I sau này
+(``preprocess.py``)
+- **các file cần sửa:** ``main.py`` , ``streamer.py``, ``preprocess.py``.
