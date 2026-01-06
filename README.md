@@ -6,10 +6,10 @@
 Dự án mô phỏng một trung tâm S.O.C (Security Operations Center) thu nhỏ. Hệ thống có khả năng tiếp nhận luồng dữ liệu khổng lồ (Big Data) từ dataset LANL Cyber-Security, đồng bộ hóa thời gian thực và phát hiện các cuộc tấn công mạng.
 
 ## Tính năng chính
-* **Multi-Input Handling:** Xử lý đồng bộ 4 nguồn: Auth, Process, DNS, Flows.
-* **High Performance:** Core xử lý ~80.000 sự kiện/giây trên máy cá nhân.
-* **Real-time Engine:** Cơ chế Streaming giả lập thời gian thực.
-* **Detection System:** Tích hợp phát hiện dựa trên Chữ ký (Signature) và Bất thường (Anomaly).
+* **Multi-Input Handling:** Xử lý đồng bộ 4 nguồn dữ liệu: Auth, Process, DNS, Flows.
+* **High Performance:** Core xử lý ~80.000 sự kiện/giây trên máy cá nhân nhờ kỹ thuật Chunking.
+* **Detection Engine:** Hệ thống phát hiện tấn công dạng Plugin (Signature & Anomaly).
+* **Alert Storage:** Lưu trữ lịch sử cảnh báo vĩnh viễn với SQLite (`alerts.db`).
 
 ## 📂 Tài liệu dự án (Documentation)
 Để tránh thông tin quá tải, chi tiết kỹ thuật được chia nhỏ tại thư mục `docs/`:
@@ -47,16 +47,23 @@ python src/main.py
 
 ## Cấu trúc thư mục
 ```text
-/
+
 MULTI-INPUT_HANDLE/
-├── alerts.db           # Database cảnh báo (SQLite)
-├── data/raw/           # Nơi chứa dataset (.gz)
-├── docs/               # Tài liệu kỹ thuật chi tiết
-├── src/                # Source code chính
-│   ├── config.py       # Cấu hình
-│   ├── streamer.py     # Engine đọc dữ liệu
-│   ├── main.py         # File khởi chạy
-│   └── ...
-├── notebooks/          # Code thử nghiệm
-└── CHANGELOG.md        # Lịch sử cập nhật
+├── alert.db                # Database lưu trữ cảnh báo (SQLite)
+├── data/raw/               # Nơi chứa dataset (.gz)
+├── docs/                   # Tài liệu kỹ thuật
+├── src/                    # Source code chính
+│   ├── templates/          # Giao diện HTML cho Dashboard
+│   │   └── dashboard.html
+│   ├── alert.py            # Quản lý Database
+│   ├── config.py           # Cấu hình hệ thống
+│   ├── dashboard.py        # Web Server (Flask)
+│   ├── detection.py        # Engine phát hiện tấn công
+│   ├── main.py             # File khởi chạy luồng chính
+│   ├── preprocess.py       # Module làm sạch dữ liệu
+│   ├── streamer.py         # Engine đọc dữ liệu đa luồng
+│   └── utils.py            # Tiện ích chung
+├── notebooks/              # Code thử nghiệm (Jupyter)
+├── requirements.txt        # Danh sách thư viện
+└── README.md               # Hướng dẫn sử dụng
 ```
