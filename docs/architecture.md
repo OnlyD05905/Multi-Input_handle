@@ -1,46 +1,81 @@
-# System Architecture
 
-## Data Flow Pipeline (Luồng dữ liệu)
 
-Hệ thống hoạt động theo mô hình Pipeline (Tuần tự) như sau:
+# System Architecture (V2.0)
 
-1.  **Input Source (Nguồn vào):**
-    * **Offline Mode:** Đọc từ file log nén `.gz` (Dataset LANL).
-    * **Online Mode (Future):** Bắt gói tin trực tiếp từ Interface mạng (Wireshark/Pyshark).
+## 1. High-Level Overview
+Hệ thống được thiết kế theo mô hình **Pipeline (Đường ống)** và **Decoupled (Tách biệt)**, đảm bảo khả năng mở rộng dễ dàng cho AI và Real-time sau này.
 
-2.  **Streamer (Bộ phát):**
-    * Module: `src/streamer.py`
-    * Nhiệm vụ: Đọc dữ liệu thô theo từng block (Chunking), đồng bộ hóa thời gian giữa các nguồn (Time Synchronization) và đẩy từng dòng sự kiện vào hệ thống.
+```mermaid
+graph LR
+    A[Data Sources] --> B(Streamer Layer)
+    B --> C(Preprocessing Layer)
+    C --> D{Detection Engine}
+    D -->|Signature Rules| E[Alert Manager]
+    D -->|AI Models (Future)| E
+    E --> F[(SQLite Database)]
+    F -.-> G[Web Dashboard (Flask)]
+```
+## 2. Chi tiết các Module
 
-3.  **Preprocessor (Tiền xử lý):**
-    * Module: `src/preprocess.py`
-    * Nhiệm vụ:
-        * Làm sạch dữ liệu (Cleaning).
-        * Tách trường (Parsing): Ví dụ tách `User@Domain` thành `User` và `Domain`.
-        * Chuẩn hóa (Normalization): Chuyển đổi IP, Port về định dạng chuẩn.
+### A. Streamer Layer (``src/streamer.py``)
 
-4.  **Detection Engine (Bộ phát hiện):**
-    * Module: `src/detection.py`
-    * Nhiệm vụ: So khớp sự kiện với các luật (Rules) hoặc Mô hình AI.
-    * Các quy tắc hiện tại:
-        * **Signature:** So khớp với danh sách đen (Red Team IP/User).
-        * **Network Anomaly:** Phát hiện quét cổng (Port Scan), truyền tải dữ liệu lớn (Data Exfiltration).
-        * **Behavior Anomaly:** Phát hiện tiến trình lạ, đăng nhập bất thường.
+**A.1 Input:** File Logs (Auth, Proc, Flows, DNS) hoặc Live Capture (Future).
 
-5.  **Alert System (Hệ thống cảnh báo):**
-    * Module: `src/alert.py`
-    * Nhiệm vụ:
-        * In cảnh báo ra màn hình Console (Real-time).
-        * Ghi log cảnh báo vào Database `alerts.db` (SQLite) để lưu trữ.
+**A.2 Logic:**
 
-## 🗂️ Database Schema (SQLite)
+1.  Chunking: Đọc file lớn từng phần nhỏ để tiết kiệm RAM.
 
-Bảng `alerts`:
-* `id`: Primary Key (Auto Increment)
-* `timestamp`: Thời gian phát hiện.
-* `log_time`: Thời gian trong log sự kiện.
-* `source_ip`: IP/Máy nguồn.
-* `dest_ip`: IP/Máy đích.
-* `alert_type`: Loại cảnh báo (VD: RedTeam, PortScan, Anomaly).
-* `severity`: Mức độ (Critical, High, Medium, Low).
-* `details`: Chi tiết sự kiện (JSON/String).
+2.  Merge Sort: Sử dụng heapq để đồng bộ hóa thời gian từ 4 nguồn dữ liệu khác nhau, đảm bảo sự kiện được phát lại đúng trình tự lịch sử.
+
+
+## B. Preprocessing Layer (src/preprocess.py)
+
+**Nhiệm vụ:** Chuẩn hóa dữ liệu thô thành dạng tiêu chuẩn (JSON/Dictionary).
+
+**Xử lý:**
+
+* Tách User@Domain -> User, Domain.
+
+* Gắn nhãn Is_Machine (Máy tính vs Người dùng).
+
+* Map Protocol ID sang tên (6 -> TCP).
+
+## C. Detection Engine (src/detection.py)
+**Kiến trúc:** Plugin-based (Sử dụng Abstract Base Class).
+
+**Thành phần:**
+
+1. SignatureBasedDetector (Đang chạy): Kiểm tra đối chiếu với tập luật cứng (Hard-coded rules) và Danh sách đen (Threat Intel).
+
+2. AnomalyDetector (Future): Module chờ sẵn để tích hợp Model AI/Deep Learning.
+
+3. Engine Core: Quản lý và phân phối log tới tất cả các Detector con.
+
+## D. Alert & Storage (src/alert.py)
+**Database:** SQLite (alert.db) đặt tại Root Project.
+
+**Schema:**
+
+1. id: Auto Increment.
+
+2. timestamp: Thời gian thực hệ thống phát hiện.
+
+3. log_time: Thời gian sự kiện trong log.
+
+4. severity: Mức độ (HIGH, MEDIUM, LOW).
+
+5. raw_data: Lưu trữ toàn bộ log gốc (JSON) để phục vụ Forensics/Re-train AI.
+
+## E. Visualization (src/dashboard.py)
+**Framework:** Flask (Python).
+
+**Cơ chế:** Đọc dữ liệu từ alert.db độc lập với luồng xử lý chính.
+
+**Tính năng:**
+
+1. Live Monitor (Auto-refresh 3s).
+
+2. Thống kê Severity.
+
+3. Hiển thị chi tiết Alert.
+
