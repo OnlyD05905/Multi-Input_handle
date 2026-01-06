@@ -18,9 +18,9 @@ Tiến độ dự án được chia thành 6 giai đoạn (Phases). Mục tiêu 
 ## Phase 2: Multi-Input Streaming (Xử lý Đa luồng)
 *Mục tiêu: Đọc và đồng bộ hóa thời gian từ cả 4 nguồn dữ liệu (Auth, Proc, DNS, Flow).*
 
-- [ ] **Task 06:** Nâng cấp `streamer.py`: Tạo class `MultiStreamer` có khả năng mở 4 file cùng lúc.
-- [ ] **Task 07:** Logic "Time Synchronization": Đảm bảo log từ các nguồn khác nhau được phát ra đúng trình tự thời gian (Giây thứ 1 của Auth phải đi cùng Giây thứ 1 của Flow).
-- [ ] **Task 08:** Test đồng bộ: Chạy `main.py` để in ra dòng chảy dữ liệu hỗn hợp (VD: 1 dòng Auth xen kẽ 1 dòng DNS).
+- [x] **Task 06:** Nâng cấp `streamer.py`: Tạo class `MultiStreamer` có khả năng mở 4 file cùng lúc.
+- [x] **Task 07:** Logic "Time Synchronization": Đảm bảo log từ các nguồn khác nhau được phát ra đúng trình tự thời gian (Giây thứ 1 của Auth phải đi cùng Giây thứ 1 của Flow).
+- [x] **Task 08:** Test đồng bộ: Chạy `main.py` để in ra dòng chảy dữ liệu hỗn hợp (VD: 1 dòng Auth xen kẽ 1 dòng DNS).
 
 ---
 

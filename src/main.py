@@ -6,42 +6,48 @@ from streamer import LogStreamer
 
 logger = setup_logger()
 
+# --- CẤU HÌNH CHẾ ĐỘ CHẠY ---
+# Options: 'all', 'auth', 'proc', 'flows', 'dns'
+TEST_MODE = 'all' 
+
 def main():
-    required_files = {
-        'Auth Log': config.AUTH_FILE,
-        'Red Team Log': config.REDTEAM_FILE
-    }
-    
-    if not validate_paths(required_files):
-        logger.error("Missing required datasets. Exiting.")
+    if not validate_paths({'Red Team': config.REDTEAM_FILE}):
         sys.exit(1)
 
-    logger.info("Initializing SOC System...")
-    logger.info(f"Target dataset: {config.AUTH_FILE}")
-
-    streamer = LogStreamer(config.AUTH_FILE)
+    logger.info(f"Initializing SOC System | Mode: {TEST_MODE.upper()}")
+    
+    # Truyền chế độ muốn test vào Streamer
+    streamer = LogStreamer(target_source=TEST_MODE)
     
     count = 0
     start_time = time.time()
+    stats = {}
 
     try:
         for log in streamer.stream():
             count += 1
             
-            if count % 10000 == 0:
-                elapsed = time.time() - start_time
-                logger.info(f"Processed {count} logs. Time elapsed: {elapsed:.2f}s")
+            # Thống kê loại log
+            source = log.get('Log_Source', 'unknown')
+            stats[source] = stats.get(source, 0) + 1
 
-            # Demo: Print first 3 logs then stop printing
-            if count <= 3:
-                print(f"[DEBUG] {log.to_dict()}")
+            # In thử 15 dòng đầu
+            if count <= 15:
+                print(f"[DEBUG] [{source.upper()}] Time: {log['Time']} | Data: {str(log)[:60]}...")
+
+            if count % 20000 == 0:
+                elapsed = time.time() - start_time
+                speed = int(count / elapsed) if elapsed > 0 else 0
+                logger.info(f"Processed {count} events. Speed: {speed} ev/s. Stats: {stats}")
 
     except KeyboardInterrupt:
-        logger.info("Process interrupted by user.")
+        logger.info("Stopped by user.")
     except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+        logger.error(f"Critical error: {e}")
+        
     finally:
-        logger.info("System shutting down.")
+        logger.info(f"Total processed: {count}")
+        logger.info(f"Final Stats: {stats}")
 
 if __name__ == "__main__":
     main()
