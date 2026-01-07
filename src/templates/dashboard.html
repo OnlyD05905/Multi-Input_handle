@@ -3,52 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SOC Monitor | Phase 6</title>
+    <title>SOC Monitor | Phase 8 AI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { background-color: #0d1117; color: #c9d1d9; font-family: 'Consolas', monospace; }
         .card { background-color: #161b22; border: 1px solid #30363d; }
         .table { color: #c9d1d9; }
         .table thead th { border-bottom: 2px solid #30363d; color: #58a6ff; }
         .table td, .table th { border-color: #30363d; }
+        
+        /* Màu Badge */
         .badge-HIGH { background-color: #da3633; color: white; }
         .badge-MEDIUM { background-color: #d29922; color: black; }
+        .badge-CRITICAL { background-color: #8957e5; color: white; } /* Tím cho Critical */
+        
+        /* Hiệu ứng AI */
+        .ai-glow { box-shadow: 0 0 10px #a371f7; border: 1px solid #a371f7; }
+        
         .live-indicator { color: #238636; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
     </style>
-    <meta http-equiv="refresh" content="3">
+    <meta http-equiv="refresh" content="5">
 </head>
 <body>
     <div class="container-fluid p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>🛡️ SOC DETECTION SYSTEM <span class="fs-6 text-muted">| V1.0</span></h2>
-            <div><span class="live-indicator">●</span> LIVE MONITORING</div>
+            <h2>🛡️ SOC MONITOR <span class="fs-6 text-muted">| AI INTEGRATED</span></h2>
+            <div><span class="live-indicator">●</span> LIVE</div>
         </div>
 
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card p-3">
+                <div class="card p-3 h-100">
                     <h5 class="text-muted">Recent Alerts</h5>
                     <h2 class="fw-bold">{{ stats.total }}</h2>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card p-3">
+                <div class="card p-3 h-100">
                     <h5 class="text-danger">High Severity</h5>
                     <h2 class="fw-bold">{{ stats.high_severity }}</h2>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3 h-100 ai-glow">
+                    <h5 style="color: #a371f7;"> AI Anomalies</h5>
+                    <h2 class="fw-bold">{{ stats.ai_anomalies }}</h2>
+                    <small class="text-muted">Detected by Isolation Forest</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-2 h-100 d-flex justify-content-center align-items-center">
+                    <canvas id="alertChart" style="max-height: 100px;"></canvas>
                 </div>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-header fw-bold">🚨 Live Security Alerts (Last 50)</div>
+            <div class="card-header fw-bold"> Live Security Alerts (Last 50)</div>
             <div class="card-body p-0">
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
                             <th>ID</th>
                             <th>Severity</th>
-                            <th>Time (Log)</th>
                             <th>Source</th>
                             <th>Alert Title</th>
                             <th>Description</th>
@@ -59,11 +78,17 @@
                         {% for alert in alerts %}
                         <tr>
                             <td>#{{ alert.id }}</td>
-                            <td><span class="badge badge-{{ alert.severity }}">{{ alert.severity }}</span></td>
-                            <td>{{ alert.log_time }}</td>
+                            <td>
+                                <span class="badge badge-{{ alert.severity }}">{{ alert.severity }}</span>
+                            </td>
                             <td>{{ alert.source|upper }}</td>
-                            <td class="fw-bold">{{ alert.title }}</td>
-                            <td>{{ alert.description }}</td>
+                            <td>
+                                {% if '(AI)' in alert.title %}
+                                    <span title="AI Detected"></span>
+                                {% endif %}
+                                {{ alert.title }}
+                            </td>
+                            <td class="small">{{ alert.description }}</td>
                             <td class="text-muted small">{{ alert.timestamp }}</td>
                         </tr>
                         {% endfor %}
@@ -72,5 +97,28 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const ctx = document.getElementById('alertChart').getContext('2d');
+        const aiCount = {{ stats.ai_anomalies }};
+        const ruleCount = {{ stats.total }} - aiCount;
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Rules', 'AI Engine'],
+                datasets: [{
+                    data: [ruleCount, aiCount],
+                    backgroundColor: ['#238636', '#a371f7'], // Xanh vs Tím
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                cutout: '70%'
+            }
+        });
+    </script>
 </body>
 </html>

@@ -76,8 +76,6 @@ class LogStreamer:
 
         if not self.generators:
             return
-
-        # Nếu chỉ có 1 nguồn, heapq.merge vẫn hoạt động tốt như generator thường
         merged_stream = heapq.merge(*self.generators, key=lambda x: x['Time'])
         
         for log in merged_stream:

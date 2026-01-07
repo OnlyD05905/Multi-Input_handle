@@ -10,6 +10,7 @@ Dự án mô phỏng một trung tâm S.O.C (Security Operations Center) thu nh�
 * **High Performance:** Core xử lý ~80.000 sự kiện/giây trên máy cá nhân nhờ kỹ thuật Chunking.
 * **Detection Engine:** Hệ thống phát hiện tấn công dạng Plugin (Signature & Anomaly).
 * **Alert Storage:** Lưu trữ lịch sử cảnh báo vĩnh viễn với SQLite (`alerts.db`).
+* **Live Dashboard:** Giao diện Web (Dark Mode) hiển thị cảnh báo thời gian thực (Auto-refresh).
 
 ## 📂 Tài liệu dự án (Documentation)
 Để tránh thông tin quá tải, chi tiết kỹ thuật được chia nhỏ tại thư mục `docs/`:

@@ -17,7 +17,9 @@ def index():
     # 2. Thống kê nhanh (Logic đơn giản để hiển thị số liệu)
     stats = {
         'total': len(recent_alerts),
-        'high_severity': sum(1 for a in recent_alerts if a['severity'] == 'HIGH')
+        'high_severity': sum(1 for a in recent_alerts if a['severity'] == 'HIGH'),
+        # [MỚI] Đếm số alert có chữ '(AI)' trong tiêu đề
+        'ai_anomalies': sum(1 for a in recent_alerts if '(AI)' in a['title'])
     }
     
     # 3. Trả về giao diện HTML kèm dữ liệu
@@ -25,5 +27,5 @@ def index():
 
 if __name__ == '__main__':
     # Chạy web server ở port 5000
-    print("🚀 Dashboard is running at: http://127.0.0.1:5000")
+    print(" running at: http://127.0.0.1:5000")
     app.run(debug=True, port=5000)

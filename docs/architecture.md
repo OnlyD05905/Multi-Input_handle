@@ -7,13 +7,14 @@ Hệ thống được thiết kế theo mô hình **Pipeline (Đường ống)**
 
 ```mermaid
 graph LR
-    A[Data Sources] --> B(Streamer Layer)
-    B --> C(Preprocessing Layer)
+    A[Dataset LANL (.gz)] --> B[LogStreamer]
+    B --> C(Preprocessor)
     C --> D{Detection Engine}
-    D -->|Signature Rules| E[Alert Manager]
-    D -->|AI Models (Future)| E
-    E --> F[(SQLite Database)]
-    F -.-> G[Web Dashboard (Flask)]
+    D -->|Rule-based| E1[Signature Detector]
+    D -->|ML-based| E2[AI Anomaly Detector]
+    E1 & E2 --> F[Alert Manager]
+    F --> G[(SQLite Database)]
+    G -.-> H[Web Dashboard]
 ```
 ## 2. Chi tiết các Module
 
@@ -68,6 +69,9 @@ graph LR
 
 ## E. Visualization (src/dashboard.py)
 **Framework:** Flask (Python).
+* Dashboard (Flask): Hiển thị cảnh báo thời gian thực.
+
+* AI Metrics: Biểu đồ tròn so sánh tỷ lệ phát hiện giữa Luật và AI, đếm số lượng bất thường do AI tìm ra.
 
 **Cơ chế:** Đọc dữ liệu từ alert.db độc lập với luồng xử lý chính.
 
