@@ -7,3 +7,6 @@ jupyter
 
 # Web Dashboard (Phase 6)
 flask
+
+#real-time
+pyshark

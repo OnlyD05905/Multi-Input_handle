@@ -49,16 +49,16 @@ Dự án xây dựng hệ thống giám sát an ninh mạng (S.O.C) với khả 
 *Mục tiêu: Tích hợp Deep Learning và chuyển sang bắt gói tin mạng thật.*
 
 - [x] **Task 24:** **[AI Module]** Xây dựng `AnomalyDetector` (kế thừa `BaseDetector`): Load model Deep Learning (.h5/.pkl).
-- [ ] **Task 25:** **[Traffic]** Tích hợp thư viện `PyShark`/`Scapy` để bắt gói tin Live từ Card mạng.
-- [ ] **Task 26:** **[Architecture]** Chuyển đổi cơ chế ghi DB sang Asynchronous (Redis/Celery) để chịu tải cao.
-- [ ] **Task 27:** **[Dashboard]** Nâng cấp Web Socket (SocketIO) để đẩy Alert thời gian thực (thay vì Refresh trang).
+- [x] **Task 25:** **[Traffic]** Tích hợp thư viện `PyShark`/`Scapy` để bắt gói tin Live từ Card mạng.
+- [x] **Task 26:** **[Architecture]** Chuyển đổi cơ chế ghi DB sang Asynchronous (Redis/Celery) để chịu tải cao.
+- [x] **Task 27:** **[Dashboard]** Nâng cấp Web Socket (SocketIO) để đẩy Alert thời gian thực (thay vì Refresh trang).
 
 ## Phase 9: Real-time Network Sniffing (Sắp tới)
 *Mục tiêu: Chuyển đổi từ đọc file log sang bắt gói tin mạng thật (Wireshark).*
 
-- [ ] **Task 27:** Cài đặt Wireshark/Npcap & thư viện `PyShark`.
-- [ ] **Task 28:** Viết `LiveStreamer`: Module bắt gói tin từ card mạng.
-- [ ] **Task 29:** Pattern Adapter: Chuyển đổi gói tin Packet thật thành định dạng Log chuẩn.
-- [ ] **Task 30:** Final Integration & Live Test.
+- [x] **Task 27:** Cài đặt Wireshark/Npcap & thư viện `PyShark`.
+- [x] **Task 28:** Viết `LiveStreamer`: Module bắt gói tin từ card mạng.
+- [x] **Task 29:** Pattern Adapter: Chuyển đổi gói tin Packet thật thành định dạng Log chuẩn.
+- [x] **Task 30:** Final Integration & Live Test.
 ---
 *Last updated: 06/01/2026*
