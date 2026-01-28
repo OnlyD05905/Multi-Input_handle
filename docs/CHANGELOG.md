@@ -37,3 +37,22 @@
 ### Changed (Thay đổi)
 - **Refactor:** Tách `BaseDetector` sang `src/interfaces.py` để giải quyết lỗi Circular Import.
 - **Engine Core:** Nâng cấp `DetectionEngine` để chạy song song cả Signature Detector và Anomaly Detector.
+
+## [Phase 9] - Real-time Defense & Stateful Analysis (28/01/2026)
+
+### Added (Tính năng mới)
+- **Live Packet Capture:**
+    - Tích hợp `Tshark` backend để bắt gói tin trực tiếp từ Card Wi-Fi/Ethernet.
+    - Hỗ trợ giải mã gói tin TCP/IP thời gian thực.
+- **Deep Packet Inspection (DPI):**
+    - Khả năng đọc và phân tích các cờ TCP (TCP Flags).
+    - Phát hiện các kỹ thuật Scan tàng hình: **Null Scan**, **Xmas Scan**.
+- **Stateful Detection Engine (DoS Protection):**
+    - Nâng cấp bộ não phát hiện từ "Stateless" sang "Stateful".
+    - Cơ chế **SYN Flood Protection**: Theo dõi số lượng gói SYN từ 1 IP trong cửa sổ thời gian trượt (Sliding Window).
+    - Ngưỡng cảnh báo (Threshold): > 100 SYN packets/second.
+
+### Changed (Cải thiện)
+- **Configuration:** Tách cấu hình Interface mạng ra file `config.py` để dễ dàng chuyển đổi giữa các máy.
+- **Fix:** Khắc phục lỗi binding sai Interface khiến Tshark không bắt được gói tin trên Windows.
+- **Performance:** Tối ưu hóa việc in log Debug, giảm nhiễu khi hệ thống chạy ở tốc độ cao.

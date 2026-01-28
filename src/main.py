@@ -1,6 +1,6 @@
 import sys
 import time
-import config
+import config # <--- Import config
 from utils import setup_logger, validate_paths
 from streamer import LogStreamer 
 from live_streamer import LiveStreamer 
@@ -8,23 +8,23 @@ from preprocess import LogPreprocessor
 from detection import DetectionEngine
 from alert import AlertDatabase
 
-# CONFIGURATION
-RUN_MODE = 'LIVE'
-INTERFACE_NAME = '5'  # <--- QUAN TRỌNG: Dùng số 5 (dạng chuỗi) ứng với Wi-Fi của bạn
+# (ĐÃ XÓA) CONFIGURATION HARD-CODED CŨ
 
 logger = setup_logger()
 
 def main():
-    logger.info(f"System Starting | Mode: {RUN_MODE}")
+    # Lấy chế độ chạy từ config
+    run_mode = config.DEFAULT_RUN_MODE
+    logger.info(f"System Starting | Mode: {run_mode}")
     
-    if RUN_MODE == 'FILE':
+    if run_mode == 'FILE':
         if not validate_paths({'Red Team': config.REDTEAM_FILE}):
             sys.exit(1)
         streamer = LogStreamer(target_source='all')
     else:
         try:
-            # Truyền interface số 5 vào đây
-            streamer = LiveStreamer(interface=INTERFACE_NAME)
+            # Khởi tạo LiveStreamer (tự động lấy interface từ config)
+            streamer = LiveStreamer() 
         except Exception as e:
             logger.error(f"Streamer Init Error: {e}")
             sys.exit(1)
@@ -41,7 +41,7 @@ def main():
             if raw_log is None: break
             count += 1
             
-            if RUN_MODE == 'FILE':
+            if run_mode == 'FILE':
                 log = preprocessor.process(raw_log)
             else:
                 log = raw_log 

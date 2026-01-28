@@ -3,7 +3,7 @@ from sklearn.ensemble import IsolationForest
 from interfaces import BaseDetector
 
 class AnomalyDetector(BaseDetector):
-    def __init__(self, training_size=1000, contamination=0.01):
+    def __init__(self, training_size=1000, contamination=0.1):
         """
         training_size: Số lượng log dùng để học 'bình thường' trước khi bắt đầu dự đoán.
         contamination: Tỷ lệ nhiễu ước tính (0.01 = kỳ vọng 1% là tấn công).

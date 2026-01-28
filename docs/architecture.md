@@ -7,79 +7,54 @@ Hệ thống được thiết kế theo mô hình **Pipeline (Đường ống)**
 
 ```mermaid
 graph LR
-    A[Dataset LANL (.gz)] --> B[LogStreamer]
-    B --> C(Preprocessor)
-    C --> D{Detection Engine}
-    D -->|Rule-based| E1[Signature Detector]
-    D -->|ML-based| E2[AI Anomaly Detector]
-    E1 & E2 --> F[Alert Manager]
-    F --> G[(SQLite Database)]
-    G -.-> H[Web Dashboard]
+    A1[Dataset LANL (.gz)] --> B{Streamer Selector}
+    A2[Live Network (Wi-Fi/Eth)] --> B
+    B -->|Offline| C1[LogStreamer]
+    B -->|Real-time| C2[LivePacketStreamer]
+    C1 & C2 --> D(Preprocessor/Normalizer)
+    D --> E{Detection Engine}
+    E -->|Stateful| F1[Signature Detector V2]
+    E -->|AI/ML| F2[Anomaly Detector]
+    F1 & F2 --> G[Alert Manager]
+    G --> H[(SQLite Database)]
+    H -.-> I[Web Dashboard]
 ```
 ## 2. Chi tiết các Module
 
-### A. Streamer Layer (``src/streamer.py``)
+### A. Streamer Layer
 
-**A.1 Input:** File Logs (Auth, Proc, Flows, DNS) hoặc Live Capture (Future).
+**A.1 LogStreamer:** Xử lý file log tĩnh (Chunking, Merge Sort).(Future).
 
-**A.2 Logic:**
+**A.2 LivePacketStreamer (``src/live_streamer.py``):**
 
-1.  Chunking: Đọc file lớn từng phần nhỏ để tiết kiệm RAM.
+1.  Sử dụng Tshark/PyShark để bắt gói tin trực tiếp từ Interface mạng.
 
-2.  Merge Sort: Sử dụng heapq để đồng bộ hóa thời gian từ 4 nguồn dữ liệu khác nhau, đảm bảo sự kiện được phát lại đúng trình tự lịch sử.
+2.  Bộ lọc BPF: Chỉ bắt các gói TCP/UDP quan trọng để tối ưu hiệu năng.
 
 
 ## B. Preprocessing Layer (src/preprocess.py)
 
-**Nhiệm vụ:** Chuẩn hóa dữ liệu thô thành dạng tiêu chuẩn (JSON/Dictionary).
+**TCP Analysis:** rích xuất cờ TCP (Flags: SYN, ACK, FIN, PSH) để phục vụ phân tích hành vi.
 
-**Xử lý:**
+## C. Detection Engine (Stateful Upgrade)
 
-* Tách User@Domain -> User, Domain.
 
-* Gắn nhãn Is_Machine (Máy tính vs Người dùng).
 
-* Map Protocol ID sang tên (6 -> TCP).
+1. SignatureBasedDetector (V2 - Stateful):
 
-## C. Detection Engine (src/detection.py)
-**Kiến trúc:** Plugin-based (Sử dụng Abstract Base Class).
+ - Stateless Rules: Phát hiện dựa trên mẫu gói tin đơn lẻ (Null Scan, Xmas Scan, Malicious Payload).
 
-**Thành phần:**
+- Stateful Memory: Sử dụng bộ nhớ tạm (In-memory tracking) để đếm tần suất gói tin theo thời gian thực (Rate Limiting).
 
-1. SignatureBasedDetector (Đang chạy): Kiểm tra đối chiếu với tập luật cứng (Hard-coded rules) và Danh sách đen (Threat Intel).
+- Ứng dụng: Phát hiện tấn công DoS/SYN Flood (Ví dụ: > 100 SYN packets/sec).
 
-2. AnomalyDetector (Future): Module chờ sẵn để tích hợp Model AI/Deep Learning.
+2. AnomalyDetector (AI):
 
-3. Engine Core: Quản lý và phân phối log tới tất cả các Detector con.
+- Sử dụng Isolation Forest để phát hiện bất thường phi tuyến tính.
 
 ## D. Alert & Storage (src/alert.py)
-**Database:** SQLite (alert.db) đặt tại Root Project.
+**Lưu trữ cảnh báo vào SQLite (alert.db) với độ trễ thấp.**
 
-**Schema:**
-
-1. id: Auto Increment.
-
-2. timestamp: Thời gian thực hệ thống phát hiện.
-
-3. log_time: Thời gian sự kiện trong log.
-
-4. severity: Mức độ (HIGH, MEDIUM, LOW).
-
-5. raw_data: Lưu trữ toàn bộ log gốc (JSON) để phục vụ Forensics/Re-train AI.
 
 ## E. Visualization (src/dashboard.py)
-**Framework:** Flask (Python).
-* Dashboard (Flask): Hiển thị cảnh báo thời gian thực.
-
-* AI Metrics: Biểu đồ tròn so sánh tỷ lệ phát hiện giữa Luật và AI, đếm số lượng bất thường do AI tìm ra.
-
-**Cơ chế:** Đọc dữ liệu từ alert.db độc lập với luồng xử lý chính.
-
-**Tính năng:**
-
-1. Live Monitor (Auto-refresh 3s).
-
-2. Thống kê Severity.
-
-3. Hiển thị chi tiết Alert.
-
+**Dashboard Flask tự động refresh (3s) để hiển thị các cuộc tấn công đang diễn ra ngay lập tức.**

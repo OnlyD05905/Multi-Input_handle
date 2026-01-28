@@ -12,7 +12,7 @@ db = AlertDatabase()
 @app.route('/')
 def index():
     # 1. Lấy 50 cảnh báo mới nhất từ DB
-    recent_alerts = db.get_recent_alerts(limit=50)
+    recent_alerts = db.get_recent_alerts(limit=100)
     
     # 2. Thống kê nhanh (Logic đơn giản để hiển thị số liệu)
     stats = {

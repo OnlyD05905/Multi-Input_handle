@@ -53,12 +53,22 @@ Dự án xây dựng hệ thống giám sát an ninh mạng (S.O.C) với khả 
 - [x] **Task 26:** **[Architecture]** Chuyển đổi cơ chế ghi DB sang Asynchronous (Redis/Celery) để chịu tải cao.
 - [x] **Task 27:** **[Dashboard]** Nâng cấp Web Socket (SocketIO) để đẩy Alert thời gian thực (thay vì Refresh trang).
 
-## Phase 9: Real-time Network Sniffing (Sắp tới)
-*Mục tiêu: Chuyển đổi từ đọc file log sang bắt gói tin mạng thật (Wireshark).*
+## Phase 9: Real-time Network Defense (Completed)
+*Mục tiêu: Chuyển đổi từ hệ thống thụ động sang hệ thống phòng thủ chủ động trên môi trường mạng thật.*
 
-- [x] **Task 27:** Cài đặt Wireshark/Npcap & thư viện `PyShark`.
-- [x] **Task 28:** Viết `LiveStreamer`: Module bắt gói tin từ card mạng.
-- [x] **Task 29:** Pattern Adapter: Chuyển đổi gói tin Packet thật thành định dạng Log chuẩn.
-- [x] **Task 30:** Final Integration & Live Test.
+- [x] **Task 27:** Cài đặt môi trường: Tích hợp Wireshark/Npcap & thư viện `PyShark`.
+- [x] **Task 28:** Xây dựng `LiveStreamer`:
+    - Module bắt gói tin TCP/IP thời gian thực.
+    - Xử lý đa luồng (Threading) để không chặn UI.
+- [x] **Task 29:** Nâng cấp `Detection Engine` (Deep Packet Inspection):
+    - Trích xuất và phân tích TCP Flags (`0x002` SYN, `0x000` Null, `0x029` Xmas).
+    - Implement bộ luật phát hiện Reconnaissance Scan (Nmap Null/Xmas).
+- [x] **Task 30:** Implement **Stateful Detection** (Chống DoS):
+    - Xây dựng cơ chế đếm gói tin (Rate Limiting).
+    - Phát hiện tấn công SYN Flood cường độ cao.
+- [x] **Task 31:** Red Teaming & Verification:
+    - Kiểm thử thực tế bằng Nmap (Null, Xmas Scan).
+    - Tự tấn công hệ thống để verify tính năng Alert.
+
 ---
-*Last updated: 06/01/2026*
+*Last updated: 28/01/2026*

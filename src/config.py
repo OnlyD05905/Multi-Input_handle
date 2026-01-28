@@ -14,9 +14,16 @@ DNS_FILE = os.path.join(DATA_DIR, 'dns.txt.gz')
 REDTEAM_FILE = os.path.join(DATA_DIR, 'redteam.txt.gz')
 
 # --- CẤU HÌNH HỆ THỐNG (SETTINGS) ---
-# Số dòng đọc mỗi lần (Chunk size)
 CHUNK_SIZE = 10000
+THRESHOLD_PORT_SCAN = 10 
+THRESHOLD_DATA_EXFIL = 10000000 
 
-# Ngưỡng cảnh báo (Thresholds) - Dùng cho các Rule sau này
-THRESHOLD_PORT_SCAN = 10  # Nếu 1 IP kết nối > 10 cổng lạ trong 1s -> Báo động
-THRESHOLD_DATA_EXFIL = 10000000 # Nếu gửi > 10MB dữ liệu ra ngoài -> Báo động
+# --- [MỚI] CẤU HÌNH LIVE CAPTURE (Refactor Day 1) ---
+# Chế độ chạy mặc định: 'LIVE' hoặc 'FILE'
+DEFAULT_RUN_MODE = 'LIVE'
+
+# Đường dẫn tới Tshark (Lấy chính xác từ máy bạn)
+TSHARK_PATH = r"D:\Desktop\Computer_Network\App_hot\Wireshark\tshark.exe"
+
+# Tên Card mạng hoặc Index (Số 5 là Wi-Fi của bạn)
+LIVE_INTERFACE = '4'
